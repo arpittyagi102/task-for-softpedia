@@ -1,5 +1,5 @@
 import { Router, Request, Response, RequestHandler } from "express";
-import User from "../models/User";
+import Employee from "../models/employee";
 import { createJWTToken } from "../utils/lib";
 import authMiddleware, { AuthRequest } from "../middleware/auth";
 
@@ -19,16 +19,16 @@ router.post("/register", (async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Password must be at least 6 characters long" });
         }
 
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ message: "User already exists" });
+        let employee = await Employee.findOne({ email });
+        if (employee) return res.status(400).json({ message: "Employee already exists" });
 
-        user = new User({ firstName, lastName, email, password });
-        await user.save();
+        employee = new Employee({ firstName, lastName, email, password });
+        await employee.save();
 
-        const token = createJWTToken(user._id);
-        const userToReturn = { firstName, lastName, email }
+        const token = createJWTToken(employee._id);
+        const employeeToReturn = { firstName, lastName, email }
 
-        res.status(201).json({ user: userToReturn, token });
+        res.status(201).json({ employee: employeeToReturn, token });
     } catch (error) {
         console.error("Registration error:", error);
         res.status(500).json({ message: "Server error" });
@@ -39,45 +39,45 @@ router.post("/login", (async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: "Invalid credentials" });
+        const employee = await Employee.findOne({ email });
+        if (!employee) return res.status(400).json({ message: "Invalid credentials" });
 
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await employee.comparePassword(password);
         if (!isMatch)
             return res.status(400).json({ message: "Invalid credentials" });
 
-        const token = createJWTToken(user._id);
-        const userToReturn = {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email
+        const token = createJWTToken(employee._id);
+        const employeeToReturn = {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            email: employee.email
         }
 
-        res.json({ user: userToReturn, token });
+        res.json({ employee: employeeToReturn, token });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
     }
 }) as RequestHandler);
 
 router.post('/validate-token', authMiddleware, (async (req: AuthRequest, res: Response) => {
-    const userId = req.userId;
+    const employeeId = req.employeeId;
 
-    if (!userId) {
+    if (!employeeId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const user = await User.findOne({ _id:userId });
-    if (!user) {
-        return res.status(400).json({ message: "User Not Found" });
+    const employee = await Employee.findOne({ _id:employeeId });
+    if (!employee) {
+        return res.status(400).json({ message: "Employee Not Found" });
     }
 
-    const userToReturn = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email
+    const employeeToReturn = {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email
     }
 
-    res.json({ user:userToReturn });
+    res.json({ employee:employeeToReturn });
 }) as RequestHandler);
 
 
