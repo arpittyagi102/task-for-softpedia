@@ -12,6 +12,7 @@
 
 ### Frontend with Next.js (React)
    - Login Page
+   - Signup Page
    - Employee List Page
      - Search by name
      - Filter by Department

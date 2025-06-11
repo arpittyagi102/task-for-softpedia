@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import { useInitializeAuth } from '@/store/hooks';
 import Link from 'next/link';
+import { useAppSelector } from '@/store/hooks';
 
 export default function Home() {
     useInitializeAuth();
@@ -12,14 +13,22 @@ export default function Home() {
             <Header />
 
             <div className="flex flex-col items-center justify-center p-40">
-                <h1 className="text-4xl font-bold">Welcome to Your App</h1>
-                <p className="mt-4 text-lg">Get started by editing the code!</p>
-                <p>find me at 
-                    <Link href="https://github.com/arpittyagi102" target='_blank'> 🐙</Link>,
-                    <Link href="https://www.linkedin.com/in/arpittyagi102" target='_blank'>🩵</Link> or
-                    <Link href="https://arpittyagi.in" target='_blank'> 🌐</Link>
-                </p>
+                <UserStatus />
             </div>
         </main>
+    );
+}
+
+function UserStatus() {
+    const { isAuthenticated } = useAppSelector((state) => state.user);
+
+    if(!isAuthenticated) {
+        return (<h1 className='text-3xl px-8 py-3 rounded-xl bg-neutral-400'>Please <Link href="/auth/login" className="text-blue-500">Login</Link> or <Link href="/auth/signup" className="text-blue-500">Sign Up</Link> to get started</h1>);
+    }
+
+    return (
+        <div>
+            <h1 className='text-3xl px-8 py-3 rounded-xl bg-neutral-400'>Lets go to <Link href="/employees" className="text-blue-500">Employees Page</Link></h1>
+        </div>
     );
 }

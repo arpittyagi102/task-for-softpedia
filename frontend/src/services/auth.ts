@@ -20,7 +20,7 @@ export async function signUp(data: UserCredentials): Promise<AuthResponse> {
             };
         }
 
-        return { success: true, token: result.token, user: result.user };
+        return { success: true, token: result.token, employee: result.employee };
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -39,7 +39,6 @@ export async function login(email: string, password: string): Promise<AuthRespon
             body: JSON.stringify({ email, password }),
         });
         const result = await response.json();
-        console.log("Login response:", result);
 
         if (!response.ok || !result.token) {
             return {
@@ -49,7 +48,7 @@ export async function login(email: string, password: string): Promise<AuthRespon
             };
         }
 
-        return { success: true, token: result.token, user: result.user };
+        return { success: true, token: result.token, employee: result.employee };
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -77,7 +76,7 @@ export async function validateToken(token: string): Promise<AuthResponse> {
             };
         }
 
-        return { success: true, token: token, user: result.user };
+        return { success: true, token: token, employee: result.employee };
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -92,4 +91,4 @@ function customError(message: string): string {
         : message;
 }
 
-type AuthResponse = { success: boolean; token: string, message?: string, user?: User}
+type AuthResponse = { success: boolean; token: string, message?: string, employee?: User}

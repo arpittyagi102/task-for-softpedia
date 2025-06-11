@@ -16,6 +16,8 @@ export default function SignUp(): React.JSX.Element {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [department, setDepartment] = useState('');
+    const [role, setRole] = useState('employee'); 
     const [inProgress, setInProgress] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -79,14 +81,15 @@ export default function SignUp(): React.JSX.Element {
             return;
         }
 
-        const response = await signUp({ firstName, lastName, email, password });
+        const response = await signUp({ firstName, lastName, email, password, role, department });
 
-        if (!response.success || !response.user) {
+        if (!response.success) {
             showToast(response.message || 'Something went wrong', 'error');
         } else {
             showToast('Sign up successful! Redirecting...', 'success');
             localStorage.setItem('token', response.token);
-            dispatch(setUser(response.user))
+            //@ts-ignore
+            dispatch(setUser(response.employee))
             router.push('/');
         }
 
@@ -99,16 +102,16 @@ export default function SignUp(): React.JSX.Element {
             <div className="lg:flex grow hidden bg-gray-500 bg-no-repeat bg-cover relative items-center backdrop-blur" style={{ backgroundImage: `url(/signup-bg.jpg)` }}>
                 <div className="absolute bg-black opacity-60 inset-0 z-0"></div>
                 <div className="w-full px-24 z-10">
-                    <h1 className="text-5xl font-bold text-left tracking-wide">Keep it special</h1>
-                    <p className="text-3xl my-4">Find your comfort here that you deserve</p>
+                    <h1 className="text-5xl font-bold text-left tracking-wide">Manage Easily</h1>
+                    <p className="text-3xl my-4">Find all your Employees data at one place</p>
                 </div>
             </div>
 
             {/* Signup Form Section */}
             <div className="w-full lg:max-w-[600px] flex items-center justify-center text-center px-auto lg:px-36 z-0 bg-white text-black">
                 <div className="py-6 z-20 w-[400px]">
-                    <h1 className={`logo my-6 text-5xl ${berkshire_swash.className}`}>
-                        Project_Name
+                    <h1 className={`logo my-6 text-3xl ${berkshire_swash.className}`}>
+                        Employee Management App
                     </h1>
 
                     {/* Signup Form */}
@@ -118,7 +121,7 @@ export default function SignUp(): React.JSX.Element {
                                 <label className="float-start text-sm">First Name</label>
                                 <input
                                     name="first-name"
-                                    className={`bg-neutral-300 focus:outline-none p-3 w-full rounded-xl ${errors.firstName ? 'border-2 border-red-500' : ''}`}
+                                    className={`bg-neutral-300 focus:outline-none p-2 w-full rounded-xl ${errors.firstName ? 'border-2 border-red-500' : ''}`}
                                     placeholder='Arpit'
                                     value={firstName}
                                     onChange={(e) => {
@@ -131,7 +134,7 @@ export default function SignUp(): React.JSX.Element {
                                 <label className="float-start text-sm">Last Name</label>
                                 <input
                                     name="last-name"
-                                    className={`bg-neutral-300 focus:outline-none p-3 w-full rounded-xl ${errors.lastName ? 'border-2 border-red-500' : ''}`}
+                                    className={`bg-neutral-300 focus:outline-none p-2 w-full rounded-xl ${errors.lastName ? 'border-2 border-red-500' : ''}`}
                                     placeholder='Tyagi'
                                     value={lastName}
                                     onChange={(e) => {
@@ -145,7 +148,7 @@ export default function SignUp(): React.JSX.Element {
                         <div className="pb-1 pt-4">
                             <label className="float-start text-sm">Email</label>
                             <input
-                                className={`block w-full p-4 text-lg rounded-xl bg-neutral-300 focus:outline-none ${errors.email ? 'border-2 border-red-500' : ''}`}
+                                className={`block w-full p-2 text-md rounded-xl bg-neutral-300 focus:outline-none ${errors.email ? 'border-2 border-red-500' : ''}`}
                                 type="email"
                                 name="email"
                                 id="email"
@@ -161,7 +164,7 @@ export default function SignUp(): React.JSX.Element {
                         <div className="pb-1 pt-4">
                             <label className="float-start text-sm">Password</label>
                             <input
-                                className={`block w-full p-4 text-lg rounded-xl bg-neutral-300 focus:outline-none ${errors.password ? 'border-2 border-red-500' : ''}`}
+                                className={`block w-full p-2 text-md rounded-xl bg-neutral-300 focus:outline-none ${errors.password ? 'border-2 border-red-500' : ''}`}
                                 type="password"
                                 name="password"
                                 id="password"
@@ -172,6 +175,33 @@ export default function SignUp(): React.JSX.Element {
                                     e.target.style.border = "none"
                                 }}
                             />
+                        </div>
+
+                        {/* Department Selection */}
+                        <div className="pb-1 pt-4">
+                            <label className="float-start text-sm">Department</label>
+                            <select
+                                className="block w-full p-2 text-md rounded-xl bg-neutral-300 focus:outline-none"
+                                value={department}
+                                onChange={(e) => setDepartment(e.target.value)}
+                            >
+                                <option value="General">Select Department</option>
+                                <option value="HR">HR</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Support">Support</option>
+                            </select>
+                        </div>
+
+                        {/* Role Selection */}
+                        <div className="pb-1 pt-4">
+                            <label className="float-start text-sm">Role</label>
+                            <input type="radio" name="role" id="employee" value="employee" checked={role === 'employee'} onChange={(e) => setRole(e.target.value)} />
+                            <label htmlFor="employee" className="ml-2">Employee</label>
+                            <input type="radio" name="role" id="admin" value="admin" checked={role === 'admin'} onChange={(e) => setRole(e.target.value)} className="ml-4" />
+                            <label htmlFor="admin" className="ml-2">Admin</label>
                         </div>
 
                         {/* SIGN UP BUTTON */}

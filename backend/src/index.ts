@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/employee", employeeRoutes)
+app.use("/api/employees", employeeRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server started on http://localhost:${PORT}`);
