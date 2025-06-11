@@ -167,7 +167,7 @@ const AdminEmployeesPage = () => {
             email: employee.email,
             password: '', // Don't pre-fill password
             role: employee.role,
-            department: employee.department
+            department: employee.department || "General"
         });
         setIsEditDialogOpen(true);
     };
@@ -283,11 +283,11 @@ const EmployeeForm = ({
 }: {
     onSubmit: (e: React.FormEvent) => void,
     isEdit?: boolean,
-    formData: any,
-    setFormData: any,
-    setIsCreateDialogOpen: any,
-    setIsEditDialogOpen: any,
-    initialFormData: any
+    formData: EmployeeFormData,
+    setFormData: React.Dispatch<React.SetStateAction<EmployeeFormData>>,
+    setIsCreateDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    initialFormData: EmployeeFormData
 }) => (
     <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

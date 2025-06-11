@@ -8,18 +8,15 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useInitializeAuth = () => {
-    console.log("Initializinggg");
     const dispatch = useDispatch();
 
     const initializeAuth = async () => {
         const token = localStorage.getItem('token');
 
         if (token) {
-            console.log("Token found")
             const response = await validateToken(token);
-            if(response.success && response.user){
-                console.log("success", response)
-                dispatch(setUser(response.user))
+            if(response.success && response.employee){
+                dispatch(setUser(response.employee))
             }
         } else {
             console.log("NO token foundd");

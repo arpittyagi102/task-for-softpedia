@@ -17,7 +17,7 @@ export default function SignUp(): React.JSX.Element {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [department, setDepartment] = useState('');
-    const [role, setRole] = useState('employee'); 
+    const [role, setRole] = useState<'employee'|'admin'>('employee'); 
     const [inProgress, setInProgress] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -83,12 +83,11 @@ export default function SignUp(): React.JSX.Element {
 
         const response = await signUp({ firstName, lastName, email, password, role, department });
 
-        if (!response.success) {
+        if (!response.success || !response.employee) {
             showToast(response.message || 'Something went wrong', 'error');
         } else {
             showToast('Sign up successful! Redirecting...', 'success');
             localStorage.setItem('token', response.token);
-            //@ts-ignore
             dispatch(setUser(response.employee))
             router.push('/');
         }
@@ -198,9 +197,9 @@ export default function SignUp(): React.JSX.Element {
                         {/* Role Selection */}
                         <div className="pb-1 pt-4">
                             <label className="float-start text-sm">Role</label>
-                            <input type="radio" name="role" id="employee" value="employee" checked={role === 'employee'} onChange={(e) => setRole(e.target.value)} />
+                            <input type="radio" name="role" id="employee" value="employee" checked={role === 'employee'} onChange={() => setRole("employee")} />
                             <label htmlFor="employee" className="ml-2">Employee</label>
-                            <input type="radio" name="role" id="admin" value="admin" checked={role === 'admin'} onChange={(e) => setRole(e.target.value)} className="ml-4" />
+                            <input type="radio" name="role" id="admin" value="admin" checked={role === 'admin'} onChange={() => setRole("admin")} className="ml-4" />
                             <label htmlFor="admin" className="ml-2">Admin</label>
                         </div>
 
