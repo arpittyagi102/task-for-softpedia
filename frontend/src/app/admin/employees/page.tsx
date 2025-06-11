@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import AdminRoute from '@/components/AdminRoute';
 
 const departments = [
     'General',
@@ -41,7 +42,7 @@ const initialFormData: EmployeeFormData = {
     department: 'General'
 };
 
-export default function AdminEmployeesPage() {
+const AdminEmployeesPage = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -172,23 +173,92 @@ export default function AdminEmployeesPage() {
     };
 
     return (
-        <div className="container mx-auto py-8 px-4">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Employee Management</h1>
-                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Employee
-                        </Button>
-                    </DialogTrigger>
+        <AdminRoute>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <h1 className="text-2xl font-bold mb-6">Manage Employees</h1>
+                <div className="flex justify-between items-center mb-8">
+                    <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Employee
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px]">
+                            <DialogHeader>
+                                <DialogTitle>Create New Employee</DialogTitle>
+                            </DialogHeader>
+                            <EmployeeForm
+                                onSubmit={handleCreateEmployee}
+                                isEdit={false}
+                                formData={formData}
+                                setFormData={setFormData}
+                                setIsCreateDialogOpen={setIsCreateDialogOpen}
+                                setIsEditDialogOpen={setIsEditDialogOpen}
+                                initialFormData={initialFormData}
+                            />
+                        </DialogContent>
+                    </Dialog>
+                </div>
+
+                {loading ? (
+                    <div className="text-center py-8">Loading...</div>
+                ) : error ? (
+                    <div className="text-center text-red-500 py-8">{error}</div>
+                ) : employees.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">No employees found</div>
+                ) : (
+                    <div className="grid gap-4">
+                        {employees.map((employee) => (
+                            <Card key={employee._id} className="p-6">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-semibold">
+                                            {employee.firstName} {employee.lastName}
+                                        </h3>
+                                        <p className="text-gray-600">{employee.email}</p>
+                                        <div className="flex gap-2">
+                                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                                                {employee.department}
+                                            </span>
+                                            <span className={`px-2 py-1 rounded-full text-sm ${employee.role === 'admin'
+                                                ? 'bg-purple-100 text-purple-800'
+                                                : 'bg-green-100 text-green-800'
+                                                }`}>
+                                                {employee.role}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => openEditDialog(employee)}
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            size="icon"
+                                            onClick={() => handleDeleteEmployee(employee._id)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                     <DialogContent className="sm:max-w-[600px]">
                         <DialogHeader>
-                            <DialogTitle>Create New Employee</DialogTitle>
+                            <DialogTitle>Edit Employee</DialogTitle>
                         </DialogHeader>
                         <EmployeeForm
-                            onSubmit={handleCreateEmployee}
-                            isEdit={false}
+                            onSubmit={handleUpdateEmployee}
+                            isEdit={true}
                             formData={formData}
                             setFormData={setFormData}
                             setIsCreateDialogOpen={setIsCreateDialogOpen}
@@ -198,76 +268,9 @@ export default function AdminEmployeesPage() {
                     </DialogContent>
                 </Dialog>
             </div>
-
-            {loading ? (
-                <div className="text-center py-8">Loading...</div>
-            ) : error ? (
-                <div className="text-center text-red-500 py-8">{error}</div>
-            ) : employees.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">No employees found</div>
-            ) : (
-                <div className="grid gap-4">
-                    {employees.map((employee) => (
-                        <Card key={employee._id} className="p-6">
-                            <div className="flex justify-between items-start">
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold">
-                                        {employee.firstName} {employee.lastName}
-                                    </h3>
-                                    <p className="text-gray-600">{employee.email}</p>
-                                    <div className="flex gap-2">
-                                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                                            {employee.department}
-                                        </span>
-                                        <span className={`px-2 py-1 rounded-full text-sm ${employee.role === 'admin'
-                                                ? 'bg-purple-100 text-purple-800'
-                                                : 'bg-green-100 text-green-800'
-                                            }`}>
-                                            {employee.role}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => openEditDialog(employee)}
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="icon"
-                                        onClick={() => handleDeleteEmployee(employee._id)}
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-            )}
-
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Employee</DialogTitle>
-                    </DialogHeader>
-                    <EmployeeForm
-                            onSubmit={handleUpdateEmployee}
-                            isEdit={true}
-                            formData={formData}
-                            setFormData={setFormData}
-                            setIsCreateDialogOpen={setIsCreateDialogOpen}
-                            setIsEditDialogOpen={setIsEditDialogOpen}
-                            initialFormData={initialFormData}
-                        />
-                </DialogContent>
-            </Dialog>
-        </div>
+        </AdminRoute>
     );
-} 
+};
 
 const EmployeeForm = ({
     onSubmit,
@@ -286,101 +289,103 @@ const EmployeeForm = ({
     setIsEditDialogOpen: any,
     initialFormData: any
 }) => (
-        <form onSubmit={onSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        required
-                    />
-                </div>
-            </div>
+    <form onSubmit={onSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     required
                 />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="password">{isEdit ? 'New Password (leave blank to keep current)' : 'Password'}</Label>
+                <Label htmlFor="lastName">Last Name</Label>
                 <Input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required={!isEdit}
-                    minLength={6}
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
                 />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select
-                        value={formData.role}
-                        onValueChange={(value) => setFormData({ ...formData, role: value })}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {roles.map((role) => (
-                                <SelectItem key={role} value={role}>
-                                    {role.charAt(0).toUpperCase() + role.slice(1)}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="department">Department</Label>
-                    <Select
-                        value={formData.department}
-                        onValueChange={(value) => setFormData({ ...formData, department: value })}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select department" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {departments.map((dept) => (
-                                <SelectItem key={dept} value={dept}>
-                                    {dept}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
-            <div className="flex justify-end gap-2 pt-4">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                        setIsCreateDialogOpen(false);
-                        setIsEditDialogOpen(false);
-                        setFormData(initialFormData);
-                    }}
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+            />
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="password">{isEdit ? 'New Password (leave blank to keep current)' : 'Password'}</Label>
+            <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required={!isEdit}
+                minLength={6}
+            />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
+                <Select
+                    value={formData.role}
+                    onValueChange={(value) => setFormData({ ...formData, role: value })}
                 >
-                    Cancel
-                </Button>
-                <Button type="submit">
-                    {isEdit ? 'Update Employee' : 'Create Employee'}
-                </Button>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {roles.map((role) => (
+                            <SelectItem key={role} value={role}>
+                                {role.charAt(0).toUpperCase() + role.slice(1)}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
-        </form>
-    );
+            <div className="space-y-2">
+                <Label htmlFor="department">Department</Label>
+                <Select
+                    value={formData.department}
+                    onValueChange={(value) => setFormData({ ...formData, department: value })}
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {departments.map((dept) => (
+                            <SelectItem key={dept} value={dept}>
+                                {dept}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+        </div>
+        <div className="flex justify-end gap-2 pt-4">
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                    setIsCreateDialogOpen(false);
+                    setIsEditDialogOpen(false);
+                    setFormData(initialFormData);
+                }}
+            >
+                Cancel
+            </Button>
+            <Button type="submit">
+                {isEdit ? 'Update Employee' : 'Create Employee'}
+            </Button>
+        </div>
+    </form>
+);
+
+export default AdminEmployeesPage;

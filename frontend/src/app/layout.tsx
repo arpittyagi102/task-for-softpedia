@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Nextjs-Express-Starter",
+    title: "Employee Management App",
     description: "Created by Arpit Tyagi",
 };
 
